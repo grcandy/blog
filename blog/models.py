@@ -26,6 +26,11 @@ def create_admin(*args, **kwargs):
 signals.post_migrate.connect(create_admin)
 
 
+class PublishedManger(models.Manager):
+    def get_queryset(self):
+        return super(PublishedManger, self).get_queryset().filter(status=2)
+
+
 @python_2_unicode_compatible
 class Post(models.Model):
     title = models.CharField(max_length=250, verbose_name='标题')
@@ -36,6 +41,8 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated = models.DateTimeField(auto_now=True, verbose_name='更新时间')
     status = models.SmallIntegerField(verbose_name='状态', choices=STATUS_CHOICES, default=2)
+    objects = models.Manager()
+    published = PublishedManger()
 
     def __str__(self):
         return '博客：{}'.format(self.title)
